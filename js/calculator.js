@@ -31,7 +31,7 @@ function multiply(arr) {
 function division([num1, num2]) {
   let result
   if (num2 == '0') {
-    return 'Math Error'
+    display.value = 'Math Error'
   } else {
     result = num1 / num2
   }
@@ -41,7 +41,7 @@ function division([num1, num2]) {
 //power
 function power([num1, num2]) {
   let result = num1 ** num2
-  return Number.isInteger(result) ? result : result.toFixed(4)
+  return Number.isInteger(result) ? result : result.toExponential(4)
 }
 
 //factorial
@@ -72,6 +72,7 @@ function operator() {
     arr = memory.split('+').filter((num) => num !== '')
     memory = String(sum(arr))
     display.value = memory
+    return true
   } else if (memory.match(/^[\-\+]?\d+(\.\d+)?\-(\d+)?\.?(\d+|\-)$/g)) {
     /* minus operator */
     console.log('minus')
@@ -86,6 +87,7 @@ function operator() {
       memory = String(subtract(arr))
     }
     display.value = memory
+    return true
   } else if (memory.match(/^[\-\+]?\d+(\.\d+)?\*[\-\+]?(\d+)?\.?(\d+)$/g)) {
     /* multiple operator */
     console.log('multiple')
@@ -96,12 +98,14 @@ function operator() {
     arr = memory.split('*').filter((num) => num !== '')
     memory = String(multiply(arr))
     display.value = memory
+    return true
   } else if (memory.match(/^[\-\+]?\d+(\.\d+)?\/[\-\+]?(\d+)?\.?(\d+)$/g)) {
     /* division operator */
     console.log('division')
     arr = memory.split('/').filter((num) => num !== '')
     memory = String(division(arr))
     display.value = memory
+    return true
   } else if (memory.match(/^[\+\-]?\d+(\.\d+)?\^[\+\-]?(\d+)?\.?\d+$/g)) {
     /* power operator */
     console.log('power')
@@ -109,18 +113,21 @@ function operator() {
     console.log(memory)
     memory = String(power(arr))
     display.value = memory
+    return true
   } else if (memory.match(/^√[\d+]?\.?\d+$/g)) {
     /* root operator*/
     console.log('root')
     let x = memory.split('√')
     memory = String(power([x[1], 0.5]))
     display.value = memory
+    return true
   } else if (memory.match(/^[\+\-]?(\d+\.)?\d+!$/g)) {
     /* factorial operator */
     console.log('factorial')
     let x = memory.split('!')
     memory = String(factorial(x[0]))
     display.value = memory
+    return true
   } else if (memory.match(/^[\+\-]?(\d+\.)?\d+%$/g)) {
     /* percentage operator */
     console.log('percentage')
@@ -128,7 +135,9 @@ function operator() {
     console.log(memory)
     memory = String(division([x[0], 100]))
     display.value = memory
+    return true
   }
+  return false
 }
 
 /*cliking any of calculator key will update the display and the operator() will run based on the display*/
@@ -160,7 +169,12 @@ function takeInput(e) {
     display.value += e.target.textContent
     memory += e.target.textContent
   } else if (e.target.textContent === '=') {
-    operator()
+    if (operator()) {
+      operator()
+    } else {
+      display.value = 'Syntax Error'
+      memory = ''
+    }
   } else if (e.target.textContent === 'C') {
     display.value = ''
     memory = ''
@@ -170,13 +184,8 @@ function takeInput(e) {
     memory = strArr.join('')
     display.value = strArr.join('')
   } else if (e.target.textContent === 'AC') {
-    if (memory === '') {
-      memory = ''
-      display.value = '0'
-    } else {
-      display.value = '0'
-      memory = ''
-    }
+    display.value = ''
+    memory = ''
   }
 }
 
@@ -214,6 +223,11 @@ document.body.addEventListener('keydown', (e) => {
     memoryArr.pop()
     memory = memoryArr.join('')
   } else if (e.key == 'Enter') {
-    operator()
+    if (operator()) {
+      operator()
+    } else {
+      display.value = 'Syntax Error'
+      memory = ''
+    }
   }
 })
